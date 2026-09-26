@@ -1,0 +1,30 @@
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt, seaborn as sns
+matplotlib.use('Agg')
+df = pd.read_csv('titanic (1).csv')
+print(df.shape); print(df.head()); df.info(); print(df.describe())
+print('-------------------------')
+kids = df[df['Age'] < 12]
+print(len(kids), kids['Survived'].mean())
+print('-------------------------')
+df['Age'] = df['Age'].fillna(df['Age'].median())
+df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])
+#df = df.drop(columns=['deck'])
+print(df.isna().sum())
+print('-------------------------')
+print(df.groupby('Sex')['Survived'].mean())
+print(df.groupby('Pclass')['Survived'].mean())
+print(df.groupby(['Pclass', 'Sex'])['Age'].mean().round(1))
+print('-------------------------')
+fig, ax = plt.subplots(1, 3, figsize=(13, 3.5))
+ax[0].hist(df['Age'], bins=30); ax[0].set_title('Возраст')
+sns.boxplot(x='Pclass', y='Fare', data=df, ax=ax[1]); ax[1].set_title('Цена по классу')
+sns.barplot(x='Sex', y='Survived', data=df, ax=ax[2]); ax[2].set_title('Выживаемость')
+fig.tight_layout(); fig.savefig('titanic.png', dpi=120)
+plt.show()
+print('-------------------------')
+df['Family'] = df['SibSp'] + df['Parch']
+df['Sex_num'] = df['Sex'].map({'female': 1, 'male': 0})
+df.to_csv('clean.csv', index=False)
+print('-------------------------1')
